@@ -13,9 +13,13 @@ project-root/
 │ ├── public/ # Static assets
 │ └── [config files] # Next.js, TypeScript, Tailwind configs
 └── backend/
-├── main.py # FastAPI application
-├── requirements.txt # Python dependencies
-└── venv/ # Python virtual environment
+   ├── main.py # FastAPI application
+   ├── image_processor.py # Image processing logic
+   ├── static/ # Static files directory
+   │ ├── uploads/ # Temporary upload storage
+   │ └── processed/ # Processed images storage
+   ├── requirements.txt # Python dependencies
+   └── venv/ # Python virtual environment
 
 ## Technical Stack
 
