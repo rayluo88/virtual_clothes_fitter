@@ -14,3 +14,4 @@ backend/static/processed/*
 # General
 .DS_Store
 .env
+img
