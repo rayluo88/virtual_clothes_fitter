@@ -138,18 +138,27 @@ class ImageProcessor:
         right_shoulder = landmarks["landmark_12"]
         left_hip = landmarks["landmark_23"]
         right_hip = landmarks["landmark_24"]
+        left_elbow = landmarks["landmark_13"]
+        right_elbow = landmarks["landmark_14"]
         
         # Calculate measurements
         shoulder_width = abs(left_shoulder["x"] - right_shoulder["x"]) * width
+        chest_width = abs(left_elbow["x"] - right_elbow["x"]) * width
         torso_height = abs(
             (left_shoulder["y"] + right_shoulder["y"])/2 - 
             (left_hip["y"] + right_hip["y"])/2
         ) * height
         
+        # Calculate ratios
+        shoulder_to_chest_ratio = float(shoulder_width / chest_width if chest_width > 0 else 1.0)
+        torso_aspect_ratio = float(shoulder_width / torso_height if torso_height > 0 else 1.0)
+        
         return {
             "shoulder_width": float(shoulder_width),
+            "chest_width": float(chest_width),
             "torso_height": float(torso_height),
-            "shoulder_to_hip_ratio": float(shoulder_width / torso_height) if torso_height > 0 else 1.0
+            "shoulder_to_chest_ratio": shoulder_to_chest_ratio,
+            "torso_aspect_ratio": torso_aspect_ratio
         }
 
     def process_images(self, user_image_path: str, clothing_image_path: str) -> Tuple[np.ndarray, Dict[str, float]]:

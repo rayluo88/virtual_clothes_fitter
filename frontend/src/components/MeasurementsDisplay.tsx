@@ -12,6 +12,16 @@ interface MeasurementsDisplayProps {
   measurements: Measurements;
 }
 
+function validateMeasurements(measurements: Partial<Measurements>): measurements is Measurements {
+  return (
+    typeof measurements?.shoulder_width === 'number' &&
+    typeof measurements?.torso_height === 'number' &&
+    typeof measurements?.chest_width === 'number' &&
+    typeof measurements?.shoulder_to_chest_ratio === 'number' &&
+    typeof measurements?.torso_aspect_ratio === 'number'
+  );
+}
+
 function getSizeRecommendation(measurements: Measurements): string {
   // Basic size recommendation based on shoulder width and chest measurements
   const { shoulder_width, chest_width, shoulder_to_chest_ratio } = measurements;
@@ -32,6 +42,15 @@ function getProportionDescription(ratio: number): string {
 }
 
 export default function MeasurementsDisplay({ measurements }: MeasurementsDisplayProps) {
+  // Validate measurements
+  if (!validateMeasurements(measurements)) {
+    return (
+      <div className="bg-red-50 p-4 rounded-lg">
+        <p className="text-red-600">Error: Invalid measurement data</p>
+      </div>
+    );
+  }
+
   const sizeRecommendation = getSizeRecommendation(measurements);
   const buildType = getProportionDescription(measurements.shoulder_to_chest_ratio);
 
