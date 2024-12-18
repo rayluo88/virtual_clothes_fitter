@@ -2,25 +2,33 @@
 
 A virtual try-on application that helps users visualize how clothes will look on them before purchasing. The app uses AI-powered technology to provide accurate clothing visualization, saving time and reducing returns.
 
-## Features
+## Current Status - MVP Phase 1
 
-### Virtual Try-On
-- Upload personal photos
-- See clothes fitted to your body
+### Implemented Features ✓
+- Basic image upload and validation
+- Simple clothing overlay on user photos
+- Pose detection and basic fitting
+- Result preview and download
+- Basic error handling and validation
+- Development environment setup
+- Project documentation
+
+### In Progress 🚧
+- Enhanced image processing pipeline
+- Improved pose detection accuracy
+- Better clothing alignment algorithms
+- Unit test coverage
+- API response optimization
+
+### Planned Features ⏳
 - Real-time preview
-- High-quality rendering
-
-### Smart Sizing
-- Automatic body measurements
-- Size recommendations
-- Fit predictions
-- Personalized adjustments
-
-### Style Management
-- Save favorite looks
-- Share results
-- Purchase links
-- Style history
+- Smart sizing recommendations
+- Multiple clothing items support
+- Style management system
+- User profile and preferences
+- Social sharing integration
+- Mobile responsiveness
+- Performance optimization
 
 ## Tech Stack
 
@@ -29,14 +37,16 @@ A virtual try-on application that helps users visualize how clothes will look on
 - React 19 with modern hooks
 - Tailwind CSS for styling
 - Axios for API communication
-- react-dropzone for file uploads
+- React-dropzone for file uploads
+- Jest and React Testing Library
 
 ### Backend
 - FastAPI for REST API
-- Python 3.x
+- Python 3.8+
 - OpenCV and MediaPipe for image processing
 - PIL (Python Imaging Library)
 - NumPy for numerical operations
+- pytest for testing
 
 ## Getting Started
 
@@ -44,6 +54,7 @@ A virtual try-on application that helps users visualize how clothes will look on
 - Node.js 18+ and npm
 - Python 3.8+
 - Virtual environment for Python
+- Git
 
 ### Backend Setup
 1. Create and activate virtual environment:
@@ -58,7 +69,9 @@ cd backend
 pip install -r requirements.txt
 ```
 
-3. Start the server:
+3. Create `.env` file with required configurations
+
+4. Start the server:
 ```bash
 uvicorn main:app --reload
 ```
@@ -70,7 +83,9 @@ cd frontend
 npm install
 ```
 
-2. Start the development server:
+2. Create `.env.local` with required configurations
+
+3. Start the development server:
 ```bash
 npm run dev
 ```
@@ -89,15 +104,18 @@ project-root/
 │   │   │   ├── page.tsx        # Main application page
 │   │   │   ├── layout.tsx      # Root layout
 │   │   │   └── globals.css     # Global styles
-│   │   └── components/
-│   │       └── ImageUploader.tsx # Image upload component
-│   ├── public/                  # Static assets
-│   └── [config files]          # Configuration files
+│   │   ├── components/
+│   │   │   ├── ImageUploader/  # Image upload component
+│   │   │   └── Preview/        # Result preview
+│   │   └── lib/
+│   │       └── api.ts          # API integration
+│   ├── public/                 # Static assets
+│   └── [config files]         # Configuration files
 └── backend/
-    ├── main.py                 # FastAPI application
-    ├── image_processor.py      # Image processing logic
-    ├── requirements.txt        # Python dependencies
-    └── venv/                   # Python virtual environment
+    ├── main.py                # FastAPI application
+    ├── image_processor.py     # Image processing logic
+    ├── requirements.txt       # Python dependencies
+    └── static/               # Processed images storage
 ```
 
 ## Development
@@ -109,6 +127,32 @@ project-root/
 ### Key Components
 - ImageUploader: Handles image upload with drag & drop
 - Image Processor: Manages clothing overlay and pose detection
+- Preview: Displays processing results
+- API Integration: Handles communication between frontend and backend
+
+### Current Limitations
+- Single front-view processing only
+- Basic clothing overlay
+- Limited pose detection accuracy
+- No size recommendations
+- No style management
+- Limited error handling
+
+## Testing
+
+### Frontend
+```bash
+cd frontend
+npm run test        # Unit tests
+npm run test:e2e    # End-to-end tests
+```
+
+### Backend
+```bash
+cd backend
+pytest              # Unit tests
+pytest --cov=app    # Coverage report
+```
 
 ## Contributing
 

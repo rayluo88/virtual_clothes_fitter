@@ -1,107 +1,203 @@
 'use client';
+
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import ImageUploader from '@/components/ImageUploader';
+import FittingResult from '@/components/FittingResult';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
+
+interface ProcessingResult {
+  status: string;
+  measurements: {
+    shoulder_width: number;
+    torso_height: number;
+    chest_width: number;
+    shoulder_to_chest_ratio: number;
+    torso_aspect_ratio: number;
+  };
+  result_url: string;
+}
 
 export default function Home() {
-  const [backendStatus, setBackendStatus] = useState<string>('Loading...');
   const [userImage, setUserImage] = useState<File | null>(null);
   const [clothingImage, setClothingImage] = useState<File | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
-  const [result, setResult] = useState<string | null>(null);
+  const [result, setResult] = useState<ProcessingResult | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'offline'>('checking');
 
   useEffect(() => {
-    const checkBackend = async () => {
-      try {
-        const response = await axios.get('http://127.0.0.1:8000/health');
-        setBackendStatus(response.data.status);
-      } catch (error) {
-        setBackendStatus('Error connecting to backend');
-      }
-    };
-
-    checkBackend();
+    checkBackendStatus();
+    // Check status every 30 seconds
+    const interval = setInterval(checkBackendStatus, 30000);
+    return () => clearInterval(interval);
   }, []);
 
-  const handleUserImageSelect = (file: File) => {
-    setUserImage(file);
-    setResult(null);
+  const checkBackendStatus = async () => {
+    try {
+      const response = await fetch('http://localhost:8000/health');
+      if (response.ok) {
+        setBackendStatus('connected');
+      } else {
+        setBackendStatus('offline');
+      }
+    } catch (error) {
+      setBackendStatus('offline');
+    }
   };
 
-  const handleClothingImageSelect = (file: File) => {
-    setClothingImage(file);
-    setResult(null);
-  };
-
-  const handleSubmit = async () => {
+  const handleProcess = async () => {
     if (!userImage || !clothingImage) {
-      alert('Please upload both images');
+      setError('Please upload both a user photo and a clothing image.');
       return;
     }
 
     setIsProcessing(true);
+    setError(null);
+
     try {
       const formData = new FormData();
       formData.append('user_image', userImage);
       formData.append('clothing_image', clothingImage);
 
-      const response = await axios.post('http://127.0.0.1:8000/process-images', formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+      const response = await fetch('http://localhost:8000/process-images', {
+        method: 'POST',
+        body: formData,
       });
 
-      setResult(response.data.result_url);
-    } catch (error) {
-      alert('Error processing images. Please try again.');
-      console.error('Error:', error);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.detail || 'Failed to process images');
+      }
+
+      const data = await response.json();
+      setResult(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'An unexpected error occurred');
     } finally {
       setIsProcessing(false);
     }
   };
 
-  return (
-    <main className="min-h-screen p-8">
-      <div className="max-w-4xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-center">AI Fitting App</h1>
-        
-        <div className="mb-4 text-center">
-          <p>Backend Status: <span className="font-semibold">{backendStatus}</span></p>
-        </div>
+  const handleReset = () => {
+    setUserImage(null);
+    setClothingImage(null);
+    setResult(null);
+    setError(null);
+  };
 
-        <div className="grid md:grid-cols-2 gap-8 mb-8">
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-center">Upload Your Photo</h2>
-            <ImageUploader type="user" onImageSelect={handleUserImageSelect} />
+  return (
+    <main className="min-h-screen bg-gray-50">
+      {!result ? (
+        <div className="max-w-4xl mx-auto px-4 py-12">
+          {/* Backend Status */}
+          <div className="mb-8 text-center">
+            <p className="text-sm">
+              Backend Status:{' '}
+              <span
+                className={`font-medium ${
+                  backendStatus === 'connected'
+                    ? 'text-green-600'
+                    : backendStatus === 'checking'
+                    ? 'text-yellow-600'
+                    : 'text-red-600'
+                }`}
+              >
+                {backendStatus === 'checking'
+                  ? 'Checking...'
+                  : backendStatus === 'connected'
+                  ? 'Connected'
+                  : 'Offline'}
+              </span>
+              {backendStatus === 'offline' && (
+                <button
+                  onClick={checkBackendStatus}
+                  className="ml-2 text-blue-600 hover:text-blue-700 text-sm"
+                >
+                  Retry
+                </button>
+              )}
+            </p>
+          </div>
+
+          <div className="text-center mb-12">
+            <h1 className="text-3xl font-bold text-gray-900 mb-4">
+              Virtual Clothing Try-On
+            </h1>
+            <p className="text-gray-600 max-w-2xl mx-auto">
+              Upload your photo and a clothing item to see how it looks on you.
+              Our AI will analyze your measurements and provide size recommendations.
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Your Photo</h2>
+              <ImageUploader
+                type="user"
+                onImageSelect={(file) => setUserImage(file)}
+              />
+            </div>
+            <div>
+              <h2 className="text-lg font-semibold mb-4">Clothing Item</h2>
+              <ImageUploader
+                type="clothing"
+                onImageSelect={(file) => setClothingImage(file)}
+              />
+            </div>
+          </div>
+
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 rounded-md">
+              <p className="text-red-600">{error}</p>
+            </div>
+          )}
+
+          <div className="text-center">
+            <button
+              onClick={handleProcess}
+              disabled={isProcessing || !userImage || !clothingImage || backendStatus !== 'connected'}
+              className={`
+                inline-flex items-center px-6 py-3 rounded-md text-white
+                ${isProcessing || !userImage || !clothingImage || backendStatus !== 'connected'
+                  ? 'bg-gray-400 cursor-not-allowed'
+                  : 'bg-blue-600 hover:bg-blue-700'}
+                transition-colors duration-200
+              `}
+            >
+              {isProcessing && (
+                <ArrowPathIcon className="w-5 h-5 mr-2 animate-spin" />
+              )}
+              {isProcessing ? 'Processing...' : 'Try It On'}
+            </button>
+            {backendStatus !== 'connected' && (
+              <p className="mt-2 text-sm text-red-600">
+                Please wait for the backend to be available
+              </p>
+            )}
+          </div>
+        </div>
+      ) : (
+        <div>
+          <div className="bg-white border-b">
+            <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
+              <h1 className="text-xl font-semibold text-gray-900">
+                Virtual Try-On Result
+              </h1>
+              <button
+                onClick={handleReset}
+                className="text-blue-600 hover:text-blue-700 font-medium"
+              >
+                Try Another
+              </button>
+            </div>
           </div>
           
-          <div>
-            <h2 className="text-xl font-semibold mb-4 text-center">Upload Clothing Image</h2>
-            <ImageUploader type="clothing" onImageSelect={handleClothingImageSelect} />
-          </div>
+          <FittingResult
+            resultImageUrl={`http://localhost:8000${result.result_url}`}
+            measurements={result.measurements}
+          />
         </div>
-
-        <div className="text-center">
-          <button
-            onClick={handleSubmit}
-            disabled={!userImage || !clothingImage || isProcessing}
-            className={`px-6 py-2 rounded-lg font-semibold
-              ${(!userImage || !clothingImage || isProcessing)
-                ? 'bg-gray-300 cursor-not-allowed'
-                : 'bg-blue-500 hover:bg-blue-600 text-white'
-              }`}
-          >
-            {isProcessing ? 'Processing...' : 'Process Images'}
-          </button>
-        </div>
-
-        {result && (
-          <div className="mt-8 text-center">
-            <h2 className="text-xl font-semibold mb-4">Result</h2>
-            <img src={result} alt="Processed Result" className="max-w-full mx-auto" />
-          </div>
-        )}
-      </div>
+      )}
     </main>
   );
 }
