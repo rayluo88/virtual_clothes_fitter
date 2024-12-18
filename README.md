@@ -1,52 +1,51 @@
 # AI Fitting App
 
-A virtual try-on application that helps users visualize how clothes will look on them before purchasing. The app uses AI-powered technology to provide accurate clothing visualization, saving time and reducing returns.
+A virtual try-on application that helps users visualize how clothes will look on them before purchasing. The app uses AI-powered technology to provide accurate clothing visualization and size recommendations.
 
 ## Current Status - MVP Phase 1
 
 ### Implemented Features ✓
-- Basic image upload and validation
-- Simple clothing overlay on user photos
-- Pose detection and basic fitting
-- Result preview and download
-- Basic error handling and validation
-- Development environment setup
-- Project documentation
+- Image upload with drag & drop support
+- Pose detection and validation
+- Body measurements extraction
+- Size recommendations
+- Body type analysis
+- Real-time backend status monitoring
+- Error handling and validation
+- Responsive UI design
 
 ### In Progress 🚧
-- Enhanced image processing pipeline
+- MGN (Multi-Garment Network) integration
+- Advanced cloth draping simulation
 - Improved pose detection accuracy
-- Better clothing alignment algorithms
+- Enhanced image processing quality
 - Unit test coverage
-- API response optimization
 
 ### Planned Features ⏳
-- Real-time preview
-- Smart sizing recommendations
 - Multiple clothing items support
-- Style management system
-- User profile and preferences
-- Social sharing integration
+- 3D visualization
+- User profile and history
+- Style recommendations
 - Mobile responsiveness
 - Performance optimization
 
 ## Tech Stack
 
 ### Frontend
-- Next.js 15.1.0 with TypeScript
-- React 19 with modern hooks
+- Next.js 13+ with TypeScript
+- React 18+ with modern hooks
 - Tailwind CSS for styling
-- Axios for API communication
-- React-dropzone for file uploads
-- Jest and React Testing Library
+- Responsive design components
+- Real-time status monitoring
+- Type-safe measurements interface
 
 ### Backend
 - FastAPI for REST API
 - Python 3.8+
-- OpenCV and MediaPipe for image processing
-- PIL (Python Imaging Library)
-- NumPy for numerical operations
-- pytest for testing
+- PyTorch for deep learning
+- MediaPipe for pose detection
+- OpenCV for image processing
+- Advanced error handling
 
 ## Getting Started
 
@@ -69,9 +68,7 @@ cd backend
 pip install -r requirements.txt
 ```
 
-3. Create `.env` file with required configurations
-
-4. Start the server:
+3. Start the server:
 ```bash
 uvicorn main:app --reload
 ```
@@ -83,9 +80,7 @@ cd frontend
 npm install
 ```
 
-2. Create `.env.local` with required configurations
-
-3. Start the development server:
+2. Start the development server:
 ```bash
 npm run dev
 ```
@@ -93,6 +88,7 @@ npm run dev
 The application will be available at:
 - Frontend: http://localhost:3000
 - Backend API: http://localhost:8000
+- API Documentation: http://localhost:8000/docs
 
 ## Project Structure
 
@@ -106,53 +102,54 @@ project-root/
 │   │   │   └── globals.css     # Global styles
 │   │   ├── components/
 │   │   │   ├── ImageUploader/  # Image upload component
-│   │   │   └── Preview/        # Result preview
+│   │   │   ├── FittingResult/  # Results display
+│   │   │   └── MeasurementsDisplay/ # Measurements UI
 │   │   └── lib/
-│   │       └── api.ts          # API integration
-│   ├── public/                 # Static assets
-│   └── [config files]         # Configuration files
+│   │       └── api.ts         # API integration
+│   ├── public/                # Static assets
+│   └── [config files]        # Configuration files
 └── backend/
-    ├── main.py                # FastAPI application
-    ├── image_processor.py     # Image processing logic
-    ├── requirements.txt       # Python dependencies
-    └── static/               # Processed images storage
+    ├── main.py               # FastAPI application
+    ├── image_processor.py    # Image processing logic
+    ├── requirements.txt      # Python dependencies
+    └── static/              # Processed images storage
 ```
 
-## Development
+## Features
+
+### Image Processing
+- Pose detection using MediaPipe
+- Body measurements extraction
+- Size recommendations
+- Body type analysis
+
+### User Interface
+- Drag & drop image upload
+- Real-time backend status
+- Interactive measurements display
+- Responsive design
+- Error handling
 
 ### API Endpoints
-- GET `/health` - Backend health check
-- POST `/process-images` - Process user and clothing images
+- `GET /health` - Backend health check
+- `POST /process-images` - Process user and clothing images
+- `GET /measurements/{image_id}` - Get stored measurements
 
-### Key Components
-- ImageUploader: Handles image upload with drag & drop
-- Image Processor: Manages clothing overlay and pose detection
-- Preview: Displays processing results
-- API Integration: Handles communication between frontend and backend
+## Development
 
 ### Current Limitations
 - Single front-view processing only
 - Basic clothing overlay
-- Limited pose detection accuracy
-- No size recommendations
+- Limited pose variations
+- No size history
 - No style management
-- Limited error handling
 
-## Testing
-
-### Frontend
-```bash
-cd frontend
-npm run test        # Unit tests
-npm run test:e2e    # End-to-end tests
-```
-
-### Backend
-```bash
-cd backend
-pytest              # Unit tests
-pytest --cov=app    # Coverage report
-```
+### Error Handling
+- Input validation
+- Pose detection validation
+- Image format validation
+- Network error handling
+- Measurement validation
 
 ## Contributing
 

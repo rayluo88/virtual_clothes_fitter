@@ -7,17 +7,20 @@ The frontend application for the AI Fitting virtual try-on system. Built with Ne
 - Modern React components with TypeScript
 - Responsive design with Tailwind CSS
 - Image upload with drag & drop support
-- Real-time image processing preview
-- Secure API integration with backend
+- Real-time backend status monitoring
+- Interactive measurements display
+- Size recommendations
+- Body type analysis
+- Error handling and validation
 
 ## Tech Stack
 
-- Next.js 15.1.0
-- React 19
+- Next.js 13+
+- React 18+
 - TypeScript
 - Tailwind CSS
-- Axios
-- React-dropzone
+- React Hooks
+- Type-safe API integration
 
 ## Getting Started
 
@@ -34,12 +37,7 @@ The frontend application for the AI Fitting virtual try-on system. Built with Ne
 npm install
 ```
 
-2. Create a `.env.local` file:
-```bash
-NEXT_PUBLIC_API_URL=http://localhost:8000
-```
-
-3. Start the development server:
+2. Start the development server:
 ```bash
 npm run dev
 ```
@@ -56,31 +54,54 @@ src/
 │   └── globals.css     # Global styles
 ├── components/
 │   ├── ImageUploader/  # Image upload functionality
-│   └── Preview/        # Result preview components
+│   ├── FittingResult/  # Results display
+│   └── MeasurementsDisplay/ # Measurements UI
 └── lib/
     └── api.ts         # API integration utilities
 ```
 
+## Components
+
+### ImageUploader
+- Drag & drop file upload
+- File type validation
+- Size validation
+- Preview functionality
+
+### FittingResult
+- Processed image display
+- Download functionality
+- Fullscreen view
+- Image quality information
+
+### MeasurementsDisplay
+- Size recommendations
+- Body type analysis
+- Detailed measurements
+- Fit tips
+- Error handling
+
 ## Development
 
-### Key Components
-
-- `ImageUploader`: Handles image upload with drag & drop
-- `Preview`: Displays processed images and results
-- `Layout`: Main application layout and navigation
+### State Management
+- React hooks for local state
+- TypeScript for type safety
+- Proper error handling
+- Loading states
 
 ### API Integration
+The frontend communicates with the backend through these endpoints:
 
-The frontend communicates with the backend through these main endpoints:
+- `GET /health` - Backend health check
+- `POST /process-images` - Submit images for processing
+- `GET /measurements/{id}` - Get measurements
 
-- `POST /process-images`: Submit images for processing
-- `GET /health`: Backend health check
-
-### State Management
-
-- React hooks for local state
-- Context API for global state (when needed)
-- Form state handled by controlled components
+### Error Handling
+- Input validation
+- Network error handling
+- Backend status monitoring
+- Invalid data handling
+- User feedback
 
 ## Building for Production
 
@@ -102,3 +123,23 @@ npm run test:e2e    # Run end-to-end tests
 2. Write meaningful commit messages
 3. Add tests for new features
 4. Update documentation as needed
+
+## Type Safety
+
+The application uses TypeScript for full type safety:
+
+```typescript
+interface Measurements {
+  shoulder_width: number;
+  torso_height: number;
+  chest_width: number;
+  shoulder_to_chest_ratio: number;
+  torso_aspect_ratio: number;
+}
+
+interface ProcessingResult {
+  status: string;
+  measurements: Measurements;
+  result_url: string;
+}
+```
